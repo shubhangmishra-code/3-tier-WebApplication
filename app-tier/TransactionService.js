@@ -8,53 +8,53 @@ const con = mysql.createConnection({
     database: dbcreds.DB_DATABASE
 });
 
-function addTransaction(amount,desc){
-    var mysql = `INSERT INTO \`transactions\` (\`amount\`, \`description\`) VALUES ('${amount}','${desc}')`;
-    con.query(mysql, function(err,result){
-        if (err) throw err;
+function addTransaction(amount, desc, callback){
+    var sql = "INSERT INTO `transactions` (`amount`, `description`) VALUES (?, ?)";
+    con.query(sql, [amount, desc], function(err, result){
+        if (err) return callback(err);
         console.log("Adding to the table should have worked");
-    }) 
-    return 200;
-}
-
-function getAllTransactions(callback){
-    var mysql = "SELECT * FROM transactions";
-    con.query(mysql, function(err,result){
-        if (err) throw err;
-        console.log("Getting all transactions...");
-        return(callback(result));
+        callback(null, 200);
     });
 }
 
-function findTransactionById(id,callback){
-    var mysql = `SELECT * FROM transactions WHERE id = ${id}`;
-    con.query(mysql, function(err,result){
-        if (err) throw err;
+function getAllTransactions(callback){
+    var sql = "SELECT * FROM transactions";
+    con.query(sql, function(err, result){
+        if (err) return callback(err);
+        console.log("Getting all transactions...");
+        return(callback(null, result));
+    });
+}
+
+function findTransactionById(id, callback){
+    var sql = "SELECT * FROM transactions WHERE id = ?";
+    con.query(sql, [id], function(err, result){
+        if (err) return callback(err);
         console.log(`retrieving transactions with id ${id}`);
-        return(callback(result));
-    }) 
+        return(callback(null, result));
+    });
 }
 
 function deleteAllTransactions(callback){
-    var mysql = "DELETE FROM transactions";
-    con.query(mysql, function(err,result){
-        if (err) throw err;
+    var sql = "DELETE FROM transactions";
+    con.query(sql, function(err, result){
+        if (err) return callback(err);
         console.log("Deleting all transactions...");
-        return(callback(result));
-    }) 
+        return(callback(null, result));
+    });
 }
 
 function deleteTransactionById(id, callback){
-    var mysql = `DELETE FROM transactions WHERE id = ${id}`;
-    con.query(mysql, function(err,result){
-        if (err) throw err;
+    var sql = "DELETE FROM transactions WHERE id = ?";
+    con.query(sql, [id], function(err, result){
+        if (err) return callback(err);
         console.log(`Deleting transactions with id ${id}`);
-        return(callback(result));
-    }) 
+        return(callback(null, result));
+    });
 }
 
 
-module.exports = {addTransaction ,getAllTransactions, deleteAllTransactions, deleteAllTransactions, findTransactionById, deleteTransactionById};
+module.exports = {addTransaction, getAllTransactions, deleteAllTransactions, findTransactionById, deleteTransactionById};
 
 
 
